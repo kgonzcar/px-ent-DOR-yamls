@@ -1,0 +1,32 @@
+kind: StorageCluster
+apiVersion: core.libopenstorage.org/v1
+metadata:
+  name: px-cluster
+  namespace: portworx
+  annotations:
+    portworx.io/install-source: "https://install.portworx.com/?operator=true&mc=false&kbver=1.23.12&ns=portworx&b=true&j=auto&kd=oc%20label%20nodes%20node1%20node2%20node3%20px%2Fmetadata-node%3Dtrue&r=17001&c=px-cluster-a33e6b37-ca16-45e8-90dc-54bb2314f209&osft=true&stork=true&csi=true&mon=true&tel=true&st=k8s&promop=true"
+#    portworx.io/pvc-controller-port: "10261" 
+#    portworx.io/pvc-controller-secure-port: "10262" 
+spec:
+  image: portworx/oci-monitor:2.12.1
+  imagePullPolicy: Always
+  kvdb:
+    internal: true
+  storage:
+    useAll: true
+    journalDevice: auto
+    kvdbDevice: /dev/sdb
+  secretsProvider: k8s
+  startPort: 9001
+  stork:
+    enabled: true
+    args:
+      webhook-controller: "true"
+  csi:
+    enabled: true
+  monitoring:
+    prometheus:
+      enabled: true
+      exportMetrics: true
+      alertManager:
+        enabled: true
