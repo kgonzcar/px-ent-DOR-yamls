@@ -1,0 +1,51 @@
+# SOURCE: https://install.portworx.com/?operator=true&mc=false&kbver=1.25.0&ns=portworx&b=true&kd=type%3Dlazyzeroedthick%2Csize%3D32&vsp=true&vc=gse-mde-01.prlb.flr.c360cloud.com&vcp=443&ds=GSE-FA02-FC-PWXPS-VMFS-002&s=%22type%3Dlazyzeroedthick%2Csize%3D150%22&c=px-cluster-1da2802c-4fa2-4ff9-b767-4474fc6f3d7b&stork=true&csi=true&mon=true&tel=false&st=k8s&promop=true
+kind: StorageCluster
+apiVersion: core.libopenstorage.org/v1
+metadata:
+  name: px-cluster-1da2802c-4fa2-4ff9-b767-4474fc6f3d7b
+  namespace: portworx
+  annotations:
+    portworx.io/install-source: "https://install.portworx.com/?operator=true&mc=false&kbver=1.25.0&ns=portworx&b=true&kd=type%3Dlazyzeroedthick%2Csize%3D32&vsp=true&vc=gse-mde-01.prlb.flr.c360cloud.com&vcp=443&ds=GSE-FA02-FC-PWXPS-VMFS-002&s=%22type%3Dlazyzeroedthick%2Csize%3D150%22&c=px-cluster-1da2802c-4fa2-4ff9-b767-4474fc6f3d7b&stork=true&csi=true&mon=true&tel=false&st=k8s&promop=true"
+spec:
+  image: portworx/oci-monitor:2.13.0
+  imagePullPolicy: Always
+  kvdb:
+    internal: true
+  cloudStorage:
+    deviceSpecs:
+    - type=lazyzeroedthick,size=150
+    kvdbDeviceSpec: type=lazyzeroedthick,size=32
+  secretsProvider: k8s
+  stork:
+    enabled: true
+    args:
+      webhook-controller: "true"
+  autopilot:
+    enabled: true
+  csi:
+    enabled: true
+  monitoring:
+    prometheus:
+      enabled: true
+      exportMetrics: true
+  env:
+  - name: VSPHERE_INSECURE
+    value: "true"
+  - name: VSPHERE_USER
+    valueFrom:
+      secretKeyRef:
+        name: px-vsphere-secret
+        key: VSPHERE_USER
+  - name: VSPHERE_PASSWORD
+    valueFrom:
+      secretKeyRef:
+        name: px-vsphere-secret
+        key: VSPHERE_PASSWORD
+  - name: VSPHERE_VCENTER
+    value: "gse-mde-01.prlb.flr.c360cloud.com"
+  - name: VSPHERE_VCENTER_PORT
+    value: "443"
+  - name: VSPHERE_DATASTORE_PREFIX
+    value: "GSE-FA02-FC-PWXPS-VMFS-002"
+  - name: VSPHERE_INSTALL_MODE
+    value: "shared"
